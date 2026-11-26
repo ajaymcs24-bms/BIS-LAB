@@ -1,0 +1,38 @@
+
+import numpy as np
+
+def fitness(x):
+    return (x - 2)**2 + np.sin(5 * x)
+
+# Parameters
+size = 20
+iterations = 100
+
+# Initialize cells
+cells = np.random.uniform(-5, 5, size)
+
+for t in range(iterations):
+
+    new_cells = cells.copy()
+
+    for i in range(size):
+
+        # Find neighbouring cells
+        left = cells[(i - 1) % size]
+        right = cells[(i + 1) % size]
+
+        # Select the best neighbour
+        neighbours = [left, cells[i], right]
+        best = min(neighbours, key=fitness)
+
+        # Update cell state
+        new_cells[i] = (
+            cells[i] + best
+        ) / 2
+
+    cells = new_cells
+
+best_solution = min(cells, key=fitness)
+
+print("Best Solution:", best_solution)
+print("Minimum Fitness:", fitness(best_solution))
