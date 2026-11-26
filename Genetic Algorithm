@@ -1,0 +1,51 @@
+
+import random
+import math
+
+def fitness(x):
+    return (x - 2)**2 + math.sin(5 * x)
+
+# Parameters
+population_size = 20
+generations = 100
+mutation_rate = 0.1
+crossover_rate = 0.8
+
+# Initial population
+population = [random.uniform(-5, 5)
+              for _ in range(population_size)]
+
+for gen in range(generations):
+
+    # Sort population by fitness
+    population.sort(key=fitness)
+
+    # Best individual
+    new_population = [population[0]]
+
+    while len(new_population) < population_size:
+
+        # Selection
+        p1 = random.choice(population[:10])
+        p2 = random.choice(population[:10])
+
+        # Crossover
+        if random.random() < crossover_rate:
+            child = (p1 + p2) / 2
+        else:
+            child = p1
+
+        # Mutation
+        if random.random() < mutation_rate:
+            child += random.uniform(-1, 1)
+
+        child = max(-5, min(5, child))
+        new_population.append(child)
+
+    population = new_population
+
+# Final result
+best = min(population, key=fitness)
+
+print("Best Solution:", best)
+print("Minimum Fitness:", fitness(best))
