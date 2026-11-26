@@ -1,0 +1,55 @@
+
+import numpy as np
+
+def fitness(x):
+    return (x - 2)**2 + np.sin(5 * x)
+
+# Parameters
+n = 20
+iterations = 100
+
+# Initialize wolves
+wolves = np.random.uniform(-5, 5, n)
+
+for t in range(iterations):
+
+    # Sort wolves based on fitness
+    wolves = sorted(wolves, key=fitness)
+
+    alpha = wolves[0]
+    beta = wolves[1]
+    delta = wolves[2]
+
+    a = 2 - 2 * t / iterations
+
+    new_wolves = []
+
+    for wolf in wolves:
+
+        positions = []
+
+        for leader in [alpha, beta, delta]:
+
+            r1 = np.random.rand()
+            r2 = np.random.rand()
+
+            A = 2 * a * r1 - a
+            C = 2 * r2
+
+            D = abs(C * leader - wolf)
+            X = leader - A * D
+
+            positions.append(X)
+
+        # Update wolf position
+        new_position = sum(positions) / 3
+        new_position = np.clip(new_position, -5, 5)
+
+        new_wolves.append(new_position)
+
+    wolves = new_wolves
+
+best = min(wolves, key=fitness)
+
+print("Best Solution:", best)
+print("Minimum Fitness:", fitness(best))
