@@ -1,0 +1,52 @@
+
+import numpy as np
+
+def fitness(x):
+    return (x - 2)**2 + np.sin(5 * x)
+
+# Parameters
+n = 20
+iterations = 100
+w = 0.7
+c1 = 1.5
+c2 = 1.5
+
+# Initialize particles
+position = np.random.uniform(-5, 5, n)
+velocity = np.random.uniform(-1, 1, n)
+
+pbest = position.copy()
+pbest_value = fitness(pbest)
+
+gbest_index = np.argmin(pbest_value)
+gbest = pbest[gbest_index]
+
+for i in range(iterations):
+
+    for j in range(n):
+
+        r1 = np.random.rand()
+        r2 = np.random.rand()
+
+        # Update velocity
+        velocity[j] = (
+            w * velocity[j]
+            + c1 * r1 * (pbest[j] - position[j])
+            + c2 * r2 * (gbest - position[j])
+        )
+
+        # Update position
+        position[j] += velocity[j]
+        position[j] = np.clip(position[j], -5, 5)
+
+        # Update personal best
+        if fitness(position[j]) < pbest_value[j]:
+            pbest[j] = position[j]
+            pbest_value[j] = fitness(position[j])
+
+    # Update global best
+    gbest_index = np.argmin(pbest_value)
+    gbest = pbest[gbest_index]
+
+print("Best Solution:", gbest)
+print("Minimum Fitness:", fitness(gbest))
