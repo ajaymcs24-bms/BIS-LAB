@@ -1,0 +1,45 @@
+
+import numpy as np
+
+def fitness(x):
+    return (x - 2)**2 + np.sin(5 * x)
+
+# Parameters
+n = 20
+iterations = 100
+pa = 0.25
+
+# Initialize nests
+nests = np.random.uniform(-5, 5, n)
+
+best = nests[np.argmin(fitness(nests))]
+
+for i in range(iterations):
+
+    for j in range(n):
+
+        # Generate new solution using Levy-like step
+        step = np.random.normal(0, 1)
+        new = nests[j] + 0.1 * step
+
+        new = np.clip(new, -5, 5)
+
+        # Compare fitness
+        k = np.random.randint(n)
+
+        if fitness(new) < fitness(nests[k]):
+            nests[k] = new
+
+    # Abandon worst nests
+    for j in range(n):
+        if np.random.rand() < pa:
+            nests[j] = np.random.uniform(-5, 5)
+
+    # Update best solution
+    current = nests[np.argmin(fitness(nests))]
+
+    if fitness(current) < fitness(best):
+        best = current
+
+print("Best Solution:", best)
+print("Minimum Fitness:", fitness(best))
