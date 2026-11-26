@@ -1,0 +1,87 @@
+
+import numpy as np
+
+# City coordinates
+cities = np.array([
+    [0, 0],
+    [1, 5],
+    [5, 2],
+    [6, 6],
+    [8, 3]
+])
+
+n = len(cities)
+
+# Distance matrix
+distance = np.zeros((n, n))
+
+for i in range(n):
+    for j in range(n):
+        distance[i][j] = np.linalg.norm(
+            cities[i] - cities[j]
+        )
+
+# Parameters
+ants = 10
+iterations = 100
+alpha = 1
+beta = 2
+rho = 0.5
+
+pheromone = np.ones((n, n))
+best_route = None
+best_distance = float('inf')
+
+for iteration in range(iterations):
+
+    for ant in range(ants):
+
+        route = [np.random.randint(n)]
+
+        while len(route) < n:
+
+            current = route[-1]
+
+            unvisited = [
+                city for city in range(n)
+                if city not in route
+            ]
+
+            probabilities = []
+
+            for city in unvisited:
+                p = (pheromone[current][city] ** alpha)
+                h = (1 / (distance[current][city] + 1e-10)) ** beta
+                probabilities.append(p * h)
+
+            probabilities = np.array(probabilities)
+            probabilities /= probabilities.sum()
+
+            next_city = np.random.choice(
+                unvisited, p=probabilities
+            )
+
+            route.append(next_city)
+
+        # Calculate total distance
+        total = sum(
+            distance[route[i]][route[(i + 1) % n]]
+            for i in range(n)
+        )
+
+        if total < best_distance:
+            best_distance = total
+            best_route = route.copy()
+
+        # Pheromone deposit
+        for i in range(n):
+            a = route[i]
+            b = route[(i + 1) % n]
+            pheromone[a][b] += 1 / total
+            pheromone[b][a] += 1 / total
+
+    # Pheromone evaporation
+    pheromone *= (1 - rho)
+
+print("Best Route:", best_route + [best_route[0]])
+print("Shortest Distance:", best_distance)
